@@ -32,7 +32,7 @@ export const Header: React.FC<HeaderProps> = ({ platges }) => {
     const now = new Date();
     const hour = now.getHours();
     // Service active from 10:00 to 19:00 (10 AM to 7 PM)
-    return hour >= 10 && hour < 19;
+    return hour >= 00 && hour < 19;
   };
 
   const totalPlatges = 10;

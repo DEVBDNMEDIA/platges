@@ -629,7 +629,6 @@ export const PlatjaDetailPage: React.FC = () => {
                       <span>Com arribar</span>
                     </button>
                   )}
-                  </button>
                 </div>
               </div>
 

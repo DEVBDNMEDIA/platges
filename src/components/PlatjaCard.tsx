@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Platja, PlatjaInfo } from '../types/platges';
 import { getIconUrl, getStatusBadgeColor } from '../utils/iconMapping';
+import { TransportLightbox } from './TransportLightbox';
+import { transportData } from '../data/transportData';
 import { MapPin, Clock, Ruler, Square, Navigation, Award, Dog, AlertTriangle, ExternalLink, X, Accessibility } from 'lucide-react';
 
 interface PlatjaCardProps {
@@ -11,6 +13,7 @@ interface PlatjaCardProps {
 export const PlatjaCard: React.FC<PlatjaCardProps> = ({ platja, platjaInfo }) => {
   const [banderaBlavaModalOpen, setBanderaBlavaModalOpen] = useState(false);
   const [platjaGossosModalOpen, setPlatjaGossosModalOpen] = useState(false);
+  const [transportModalOpen, setTransportModalOpen] = useState(false);
 
   // Helper function to normalize boolean values
   const normalizeBooleanValue = (value: boolean | string): boolean => {
@@ -81,7 +84,7 @@ export const PlatjaCard: React.FC<PlatjaCardProps> = ({ platja, platjaInfo }) =>
 
   const handleDirectionsClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    window.open(platjaInfo.googleMapsUrl, '_blank');
+    setTransportModalOpen(true);
   };
 
   const handleBanderaBlavaClick = (e: React.MouseEvent) => {
@@ -102,6 +105,10 @@ export const PlatjaCard: React.FC<PlatjaCardProps> = ({ platja, platjaInfo }) =>
     setPlatjaGossosModalOpen(false);
   };
 
+  const closeTransportModal = () => {
+    setTransportModalOpen(false);
+  };
+
   // Get Bandera Blava beaches for modal
   const banderaBlavaBeaches = [
     { name: "L'Estació", key: "l_estaci" },
@@ -111,6 +118,8 @@ export const PlatjaCard: React.FC<PlatjaCardProps> = ({ platja, platjaInfo }) =>
     { name: "La Marina", key: "la_marina" }
   ];
 
+  // Get transport info for this beach
+  const transportInfo = transportData.find(t => t.platjaKey === platjaInfo.apiName.split('.')[1]);
   return (
     <>
       <div 
@@ -429,6 +438,15 @@ export const PlatjaCard: React.FC<PlatjaCardProps> = ({ platja, platjaInfo }) =>
             </div>
           </div>
         </div>
+      )}
+
+      {/* Transport Modal */}
+      {transportModalOpen && transportInfo && (
+        <TransportLightbox
+          isOpen={transportModalOpen}
+          onClose={closeTransportModal}
+          transportInfo={transportInfo}
+        />
       )}
     </>
   );

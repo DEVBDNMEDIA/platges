@@ -14,6 +14,7 @@ import { MetaTags } from './components/MetaTags';
 import { MainNavigation } from './components/MainNavigation';
 import { AccessibilityPage } from './components/AccessibilityPage';
 import { AvisosWidget } from './components/AvisosWidget';
+import { BeachFinderAI } from './components/BeachFinderAI';
 
 function HomePage() {
   const [platges, setPlatges] = useState<Platja[]>([]);
@@ -22,6 +23,7 @@ function HomePage() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [sortOrder, setSortOrder] = useState<'sud-nord' | 'nord-sud'>('nord-sud');
   const [searchTerm, setSearchTerm] = useState('');
+  const [beachFinderOpen, setBeachFinderOpen] = useState(false);
 
   // Helper function to normalize boolean values from API
   const normalizeBooleanValue = (value: boolean | string): boolean => {
@@ -159,7 +161,11 @@ function HomePage() {
         {/* Navigation Header */}
         <MainNavigation />
         
-        <Header lastUpdated={lastUpdated} platges={platges} />
+        <Header 
+          lastUpdated={lastUpdated} 
+          platges={platges} 
+          onOpenBeachFinder={() => setBeachFinderOpen(true)}
+        />
         
         {/* Gradient Transition */}
         <div className="h-16 bg-gradient-to-b from-black/20 via-black/10 to-transparent"></div>
@@ -205,6 +211,12 @@ function HomePage() {
         </div>
 
         <Footer />
+
+        {/* Beach Finder AI */}
+        <BeachFinderAI
+          isOpen={beachFinderOpen}
+          onClose={() => setBeachFinderOpen(false)}
+        />
       </div>
     </>
   );

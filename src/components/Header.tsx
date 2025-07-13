@@ -1,13 +1,14 @@
 import React from 'react';
-import { Waves, ChevronDown, Clock } from 'lucide-react';
+import { Waves, ChevronDown, Clock, Brain } from 'lucide-react';
 import { Platja } from '../types/platges';
 
 interface HeaderProps {
   lastUpdated: Date | null;
   platges: Platja[];
+  onOpenBeachFinder: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ platges }) => {
+export const Header: React.FC<HeaderProps> = ({ platges, onOpenBeachFinder }) => {
   const scrollToPlatges = () => {
     const platgesSection = document.getElementById('platges-section');
     if (platgesSection) {
@@ -79,11 +80,22 @@ export const Header: React.FC<HeaderProps> = ({ platges }) => {
           {/* CTA Button */}
           <button
             onClick={scrollToPlatges}
-            className="group bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl mb-8 sm:mb-12"
+            className="group bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl mb-4 sm:mb-6"
           >
             <span className="flex items-center">
               Consulta les platges
               <ChevronDown className="ml-2 w-4 h-4 group-hover:animate-bounce" />
+            </span>
+          </button>
+
+          {/* AI Beach Finder Button */}
+          <button
+            onClick={onOpenBeachFinder}
+            className="group bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl mb-8 sm:mb-12"
+          >
+            <span className="flex items-center">
+              <Brain className="mr-2 w-4 h-4" />
+              Cercador Intel·ligent
             </span>
           </button>
 

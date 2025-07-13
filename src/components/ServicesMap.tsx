@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { MapPin, Navigation, X, ZoomIn, ZoomOut, RotateCcw, Move } from 'lucide-react';
+import React, { useState } from 'react';
+import { MapPin, Navigation, X, ExternalLink } from 'lucide-react';
 import { PlatjaServei } from '../types/platges';
 
 interface ServicesMapProps {
@@ -17,12 +17,6 @@ interface ServicePoint {
 
 export const ServicesMap: React.FC<ServicesMapProps> = ({ serveis, platjaName }) => {
   const [selectedService, setSelectedService] = useState<ServicePoint | null>(null);
-  const [zoom, setZoom] = useState(16);
-  const [center, setCenter] = useState({ lat: 41.4501, lng: 2.2531 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0, centerLat: 0, centerLng: 0 });
-  const [mapKey, setMapKey] = useState(0);
-  const mapContainerRef = useRef<HTMLDivElement>(null);
 
   // Calculate center point from all coordinates
   const calculateCenter = () => {
@@ -39,10 +33,6 @@ export const ServicesMap: React.FC<ServicesMapProps> = ({ serveis, platjaName })
 
     return { lat: avgLat, lng: avgLng };
   };
-
-  useEffect(() => {
-    setCenter(calculateCenter());
-  }, [serveis]);
 
   // Create service points
   const createServicePoints = (): ServicePoint[] => {
@@ -67,99 +57,7 @@ export const ServicesMap: React.FC<ServicesMapProps> = ({ serveis, platjaName })
   };
 
   const servicePoints = createServicePoints();
-
-  // Convert lat/lng to pixel coordinates based on zoom and center
-  const latLngToPixel = (lat: number, lng: number) => {
-    if (!mapContainerRef.current) return { x: 0, y: 0 };
-    
-    const mapWidth = mapContainerRef.current.offsetWidth;
-    const mapHeight = mapContainerRef.current.offsetHeight;
-    
-    // Millor conversió de coordenades
-    const scale = Math.pow(2, zoom - 1);
-    
-    // Calcular offset en píxels des del centre
-    const lngDiff = lng - center.lng;
-    const latDiff = lat - center.lat;
-    
-    // Conversió més precisa a píxels
-    const pixelsPerDegreeLng = scale * mapWidth / 360;
-    const pixelsPerDegreeLat = scale * mapHeight / 180;
-    
-    const x = mapWidth / 2 + (lngDiff * pixelsPerDegreeLng);
-    const y = mapHeight / 2 - (latDiff * pixelsPerDegreeLat);
-    
-    return { x, y };
-  };
-
-  const handleZoomIn = () => {
-    setZoom(prev => Math.min(prev + 1, 19));
-    setMapKey(prev => prev + 1);
-  };
-
-  const handleZoomOut = () => {
-    setZoom(prev => Math.max(prev - 1, 10));
-    setMapKey(prev => prev + 1);
-  };
-
-  const handleReset = () => {
-    setCenter(calculateCenter());
-    setZoom(16);
-    setMapKey(prev => prev + 1);
-  };
-
-  // Improved drag handling with better mobile support
-  const handlePointerDown = (e: React.PointerEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-    setDragStart({
-      x: e.clientX,
-      y: e.clientY,
-      centerLat: center.lat,
-      centerLng: center.lng
-    });
-    
-    if (mapContainerRef.current) {
-      mapContainerRef.current.setPointerCapture(e.pointerId);
-    }
-  };
-
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isDragging || !mapContainerRef.current) return;
-    
-    e.preventDefault();
-    e.stopPropagation();
-    const deltaX = e.clientX - dragStart.x;
-    const deltaY = e.clientY - dragStart.y;
-    
-    const mapWidth = mapContainerRef.current.offsetWidth;
-    const mapHeight = mapContainerRef.current.offsetHeight;
-    
-    // Conversió millorada amb millor escalat
-    const scale = Math.pow(2, zoom - 1);
-    const pixelsPerDegreeLng = scale * mapWidth / 360;
-    const pixelsPerDegreeLat = scale * mapHeight / 180;
-    
-    const lngDelta = -deltaX / pixelsPerDegreeLng;
-    const latDelta = deltaY / pixelsPerDegreeLat;
-    
-    setCenter({
-      lat: dragStart.centerLat + latDelta,
-      lng: dragStart.centerLng + lngDelta
-    });
-  };
-
-  const handlePointerUp = (e: React.PointerEvent) => {
-    if (isDragging) {
-      setMapKey(prev => prev + 1);
-    }
-    setIsDragging(false);
-    
-    if (mapContainerRef.current) {
-      mapContainerRef.current.releasePointerCapture(e.pointerId);
-    }
-  };
+  const center = calculateCenter();
 
   const openInGoogleMaps = (point?: ServicePoint) => {
     if (point) {
@@ -180,124 +78,56 @@ export const ServicesMap: React.FC<ServicesMapProps> = ({ serveis, platjaName })
     setSelectedService(null);
   };
 
-  // Calculate map bounds for the current zoom and center
-  const getMapBounds = () => {
-    if (!mapContainerRef.current) return {
-      north: center.lat + 0.01,
-      south: center.lat - 0.01,
-      east: center.lng + 0.01,
-      west: center.lng - 0.01
+  // Create a simple static map URL with markers
+  const createMapUrl = () => {
+    const zoom = 16;
+    const mapboxToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw'; // Public Mapbox token
+    
+    // Use OpenStreetMap as fallback
+    const bounds = {
+      north: center.lat + 0.003,
+      south: center.lat - 0.003,
+      east: center.lng + 0.003,
+      west: center.lng - 0.003
     };
     
-    const mapWidth = mapContainerRef.current.offsetWidth;
-    const mapHeight = mapContainerRef.current.offsetHeight;
-    const scale = Math.pow(2, zoom - 1);
-    
-    // Calcular el rang basat en les dimensions reals del mapa
-    const lngRange = 360 / (scale * mapWidth / mapWidth);
-    const latRange = 180 / (scale * mapHeight / mapHeight);
-    
-    return {
-      north: center.lat + latRange / 8,
-      south: center.lat - latRange / 8,
-      east: center.lng + lngRange / 8,
-      west: center.lng - lngRange / 8
-    };
+    return `https://www.openstreetmap.org/export/embed.html?bbox=${bounds.west},${bounds.south},${bounds.east},${bounds.north}&layer=mapnik&marker=${center.lat},${center.lng}`;
   };
-
-  const mapBounds = getMapBounds();
-  const mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${mapBounds.west},${mapBounds.south},${mapBounds.east},${mapBounds.north}&layer=mapnik`;
 
   return (
     <div className="space-y-4">
-      {/* Map Container */}
-      <div 
-        ref={mapContainerRef}
-        className={`relative h-64 bg-gray-100 rounded-lg overflow-hidden border touch-none select-none ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerLeave={handlePointerUp}
-        onPointerCancel={handlePointerUp}
-        style={{ userSelect: 'none', touchAction: 'none' }}
-      >
-        {/* Background Map */}
+      {/* Simple Static Map */}
+      <div className="relative h-64 bg-gray-100 rounded-lg overflow-hidden border">
         <iframe
-          key={mapKey}
-          src={mapUrl}
+          src={createMapUrl()}
           width="100%"
           height="100%"
-          style={{ border: 0, pointerEvents: 'none' }}
+          style={{ border: 0 }}
           allowFullScreen
           loading="lazy"
           title={`Mapa de serveis - ${platjaName}`}
           className="absolute inset-0"
         />
         
-        {/* Service Points Overlay */}
-        <div className="absolute inset-0 pointer-events-none">
-          {servicePoints.map((point) => {
-            const pixelPos = latLngToPixel(point.lat, point.lng);
-            
-            // Only show points within visible area
-            if (pixelPos.x < -10 || pixelPos.x > (mapContainerRef.current?.offsetWidth || 0) + 10 ||
-                pixelPos.y < -10 || pixelPos.y > (mapContainerRef.current?.offsetHeight || 0) + 10) {
-              return null;
-            }
-
-            return (
-              <button
-                key={point.id}
-                className={`absolute w-4 h-4 ${point.color} rounded-full border-2 border-white shadow-lg transform -translate-x-1/2 -translate-y-1/2 hover:scale-125 transition-transform cursor-pointer z-20 pointer-events-auto`}
-                style={{
-                  left: `${pixelPos.x}px`,
-                  top: `${pixelPos.y}px`,
-                }}
-                onClick={() => handleServiceClick(point)}
-                onPointerDown={(e) => e.stopPropagation()}
-                title={point.tipus}
-              />
-            );
-          })}
+        {/* Simple overlay with service count */}
+        <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-sm">
+          <div className="flex items-center space-x-2">
+            <MapPin className="w-4 h-4 text-blue-600" />
+            <span className="text-sm font-medium text-gray-900">
+              {servicePoints.length} serveis disponibles
+            </span>
+          </div>
         </div>
 
-        {/* Map Controls */}
-        <div className="absolute top-2 right-2 flex flex-col space-y-1 z-30">
+        {/* External link button */}
+        <div className="absolute top-2 right-2">
           <button
-            onClick={handleZoomIn}
-            onPointerDown={(e) => e.stopPropagation()}
-            className="bg-white hover:bg-gray-50 border border-gray-300 rounded p-1 shadow-sm transition-colors"
-            title="Zoom in"
+            onClick={() => openInGoogleMaps()}
+            className="bg-white/90 backdrop-blur-sm hover:bg-white border border-gray-300 rounded-lg p-2 shadow-sm transition-colors"
+            title="Obrir a Google Maps"
           >
-            <ZoomIn className="w-4 h-4 text-gray-600" />
+            <ExternalLink className="w-4 h-4 text-gray-600" />
           </button>
-          <button
-            onClick={handleZoomOut}
-            onPointerDown={(e) => e.stopPropagation()}
-            className="bg-white hover:bg-gray-50 border border-gray-300 rounded p-1 shadow-sm transition-colors"
-            title="Zoom out"
-          >
-            <ZoomOut className="w-4 h-4 text-gray-600" />
-          </button>
-          <button
-            onClick={handleReset}
-            onPointerDown={(e) => e.stopPropagation()}
-            className="bg-white hover:bg-gray-50 border border-gray-300 rounded p-1 shadow-sm transition-colors"
-            title="Reset view"
-          >
-            <RotateCcw className="w-4 h-4 text-gray-600" />
-          </button>
-        </div>
-
-        {/* Drag indicator */}
-        <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded flex items-center space-x-1">
-          <Move className="w-3 h-3" />
-          <span>Arrossega per moure</span>
-        </div>
-
-        {/* Zoom Level Indicator */}
-        <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-          Zoom: {zoom}
         </div>
       </div>
 
@@ -339,22 +169,39 @@ export const ServicesMap: React.FC<ServicesMapProps> = ({ serveis, platjaName })
         </div>
       )}
 
-      {/* Legend */}
+      {/* Services List */}
       <div className="bg-gray-50 rounded-lg p-4">
         <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
           <MapPin className="w-4 h-4 mr-2" />
-          Llegenda del mapa
+          Serveis disponibles
         </h4>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+        <div className="space-y-2">
           {serveis.serveis.map((servei, index) => {
             const colors = ['bg-red-500', 'bg-blue-500', 'bg-green-500', 'bg-orange-500', 'bg-purple-500', 'bg-yellow-500', 'bg-pink-500', 'bg-gray-500'];
             const color = colors[index % colors.length];
             
             return (
-              <div key={index} className="flex items-center space-x-2">
-                <div className={`w-3 h-3 ${color} rounded-full border border-white shadow-sm`} />
-                <span className="text-gray-700">{servei.tipus === 'Xiringuito / mòdul bar' ? 'Guingueta / mòdul bar' : servei.tipus}</span>
-                <span className="text-gray-500">({servei.geolocalitzacio.length})</span>
+              <div key={index} className="flex items-center justify-between p-3 bg-white rounded-lg border">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-3 h-3 ${color} rounded-full border border-white shadow-sm`} />
+                  <div>
+                    <span className="text-gray-900 font-medium">
+                      {servei.tipus === 'Xiringuito / mòdul bar' ? 'Guingueta / mòdul bar' : servei.tipus}
+                    </span>
+                    <p className="text-sm text-gray-500">{servei.geolocalitzacio.length} ubicacions</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    const firstCoord = servei.geolocalitzacio[0];
+                    if (firstCoord) {
+                      window.open(`https://www.google.com/maps/search/?api=1&query=${firstCoord[1]},${firstCoord[0]}`, '_blank');
+                    }
+                  }}
+                  className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                >
+                  Veure
+                </button>
               </div>
             );
           })}

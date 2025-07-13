@@ -6,6 +6,8 @@ import { getIconUrl, getStatusBadgeColor } from '../utils/iconMapping';
 import { MetaTags } from './MetaTags';
 import { Lightbox } from './Lightbox';
 import { ServicesMap } from './ServicesMap';
+import { TransportLightbox } from './TransportLightbox';
+import { transportData } from '../data/transportData';
 import { Footer } from './Footer';
 import { WeatherWidget } from './WeatherWidget';
 import { MainNavigation } from './MainNavigation';
@@ -36,6 +38,7 @@ export const PlatjaDetailPage: React.FC = () => {
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [banderaBlavaModalOpen, setBanderaBlavaModalOpen] = useState(false);
   const [platjaGossosModalOpen, setPlatjaGossosModalOpen] = useState(false);
+  const [transportModalOpen, setTransportModalOpen] = useState(false);
 
   // Find platja info
   const platjaInfo = platgesInfo.find(p => p.apiName.split('.')[1] === platjaKey);
@@ -221,6 +224,9 @@ export const PlatjaDetailPage: React.FC = () => {
 
   const nearbyBeaches = getNearbyBeaches();
 
+  // Get transport info for this beach
+  const transportInfo = transportData.find(t => t.platjaKey === platjaKey);
+
   // Get Bandera Blava beaches for modal
   const banderaBlavaBeaches = [
     { name: "L'Estació", key: "l_estaci" },
@@ -244,6 +250,10 @@ export const PlatjaDetailPage: React.FC = () => {
 
   const closePlatjaGossosModal = () => {
     setPlatjaGossosModalOpen(false);
+  };
+
+  const closeTransportModal = () => {
+    setTransportModalOpen(false);
   };
 
   if (loading) {
@@ -605,10 +615,20 @@ export const PlatjaDetailPage: React.FC = () => {
                 <div className="space-y-3">
                   <button
                     onClick={() => window.open(platjaInfo.googleMapsUrl, '_blank')}
-                    className="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    className="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                   >
-                    <Navigation className="w-5 h-5" />
-                    <span>Com arribar</span>
+                    <MapPin className="w-5 h-5" />
+                    <span>Ubicació al mapa</span>
+                  </button>
+                  {transportInfo && (
+                    <button
+                      onClick={() => setTransportModalOpen(true)}
+                      className="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      <Navigation className="w-5 h-5" />
+                      <span>Com arribar</span>
+                    </button>
+                  )}
                   </button>
                 </div>
               </div>
@@ -808,6 +828,15 @@ export const PlatjaDetailPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Transport Modal */}
+      {transportModalOpen && transportInfo && (
+        <TransportLightbox
+          isOpen={transportModalOpen}
+          onClose={closeTransportModal}
+          transportInfo={transportInfo}
+        />
+      )}
     </>
   );
 };

@@ -75,17 +75,19 @@ export const ServicesMap: React.FC<ServicesMapProps> = ({ serveis, platjaName })
     const mapWidth = mapContainerRef.current.offsetWidth;
     const mapHeight = mapContainerRef.current.offsetHeight;
     
-    // Simplified coordinate conversion for better accuracy
-    const scale = Math.pow(2, zoom);
+    // Millor conversió de coordenades
+    const scale = Math.pow(2, zoom - 1);
     
-    // Calculate pixel offset from center
+    // Calcular offset en píxels des del centre
     const lngDiff = lng - center.lng;
     const latDiff = lat - center.lat;
     
-    // Convert to pixels (approximate)
-    const pixelsPerDegree = scale * 256 / 360;
-    const x = mapWidth / 2 + (lngDiff * pixelsPerDegree);
-    const y = mapHeight / 2 - (latDiff * pixelsPerDegree);
+    // Conversió més precisa a píxels
+    const pixelsPerDegreeLng = scale * mapWidth / 360;
+    const pixelsPerDegreeLat = scale * mapHeight / 180;
+    
+    const x = mapWidth / 2 + (lngDiff * pixelsPerDegreeLng);
+    const y = mapHeight / 2 - (latDiff * pixelsPerDegreeLat);
     
     return { x, y };
   };
@@ -134,11 +136,13 @@ export const ServicesMap: React.FC<ServicesMapProps> = ({ serveis, platjaName })
     const mapWidth = mapContainerRef.current.offsetWidth;
     const mapHeight = mapContainerRef.current.offsetHeight;
     
-    // Improved conversion with better scaling
-    const scale = Math.pow(2, zoom);
-    const pixelsPerDegree = scale * 256 / 360;
-    const lngDelta = -deltaX / pixelsPerDegree;
-    const latDelta = deltaY / pixelsPerDegree;
+    // Conversió millorada amb millor escalat
+    const scale = Math.pow(2, zoom - 1);
+    const pixelsPerDegreeLng = scale * mapWidth / 360;
+    const pixelsPerDegreeLat = scale * mapHeight / 180;
+    
+    const lngDelta = -deltaX / pixelsPerDegreeLng;
+    const latDelta = deltaY / pixelsPerDegreeLat;
     
     setCenter({
       lat: dragStart.centerLat + latDelta,
@@ -178,15 +182,26 @@ export const ServicesMap: React.FC<ServicesMapProps> = ({ serveis, platjaName })
 
   // Calculate map bounds for the current zoom and center
   const getMapBounds = () => {
-    const scale = Math.pow(2, zoom);
-    const latRange = 180 / scale;
-    const lngRange = 360 / scale;
+    if (!mapContainerRef.current) return {
+      north: center.lat + 0.01,
+      south: center.lat - 0.01,
+      east: center.lng + 0.01,
+      west: center.lng - 0.01
+    };
+    
+    const mapWidth = mapContainerRef.current.offsetWidth;
+    const mapHeight = mapContainerRef.current.offsetHeight;
+    const scale = Math.pow(2, zoom - 1);
+    
+    // Calcular el rang basat en les dimensions reals del mapa
+    const lngRange = 360 / (scale * mapWidth / mapWidth);
+    const latRange = 180 / (scale * mapHeight / mapHeight);
     
     return {
-      north: center.lat + latRange / 4,
-      south: center.lat - latRange / 4,
-      east: center.lng + lngRange / 4,
-      west: center.lng - lngRange / 4
+      north: center.lat + latRange / 8,
+      south: center.lat - latRange / 8,
+      east: center.lng + lngRange / 8,
+      west: center.lng - lngRange / 8
     };
   };
 

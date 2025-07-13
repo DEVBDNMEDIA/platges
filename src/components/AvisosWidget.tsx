@@ -82,7 +82,9 @@ export const AvisosWidget: React.FC<AvisosWidgetProps> = ({ platjaApiName, showG
   };
 
   const formatDate = (dateString: string) => {
+    // Crear la data i afegir 2 hores per UTC+2
     const date = new Date(dateString);
+    date.setHours(date.getHours() + 2);
     return date.toLocaleString('ca-ES', {
       day: '2-digit',
       month: '2-digit',

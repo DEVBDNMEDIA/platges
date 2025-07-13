@@ -166,7 +166,9 @@ function HomePage() {
         
         <div id="platges-section" className="container mx-auto px-4 py-12">
           {/* Global Warnings */}
-          <AvisosWidget showGlobal={true} />
+          <div className="mb-8">
+            <AvisosWidget showGlobal={true} />
+          </div>
           
           <Controls
             loading={loading}

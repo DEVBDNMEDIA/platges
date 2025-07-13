@@ -164,7 +164,6 @@ function HomePage() {
         <Header 
           lastUpdated={lastUpdated} 
           platges={platges} 
-          onOpenBeachFinder={() => setBeachFinderOpen(true)}
         />
         
         {/* Gradient Transition */}

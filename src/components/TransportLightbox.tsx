@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Bus, Train, Navigation, Car, Clock, MapPin } from 'lucide-react';
+import { X, Bus, Train, Navigation, Car, Clock, MapPin, ExternalLink } from 'lucide-react';
 import { TransportInfo } from '../data/transportData';
 
 interface TransportLightboxProps {
@@ -47,24 +47,18 @@ export const TransportLightbox: React.FC<TransportLightboxProps> = ({
 
         {/* Content */}
         <div className="p-6 space-y-6">
-          {/* Status and Occupation */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {transportInfo.status && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <h3 className="font-semibold text-red-800 mb-2">Estat</h3>
-                <p className="text-red-700">{transportInfo.status}</p>
-              </div>
-            )}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 className="font-semibold text-blue-800 mb-2">Ocupació</h3>
-              <p className="text-blue-700">{transportInfo.occupation}</p>
-            </div>
-            {transportInfo.beachType && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <h3 className="font-semibold text-green-800 mb-2">Tipus</h3>
-                <p className="text-green-700">{transportInfo.beachType}</p>
-              </div>
-            )}
+          {/* Google Maps Link */}
+          <div className="text-center">
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${transportInfo.platjaName}+Badalona`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center space-x-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+            >
+              <MapPin className="w-5 h-5" />
+              <span>Obrir a Google Maps</span>
+              <ExternalLink className="w-4 h-4" />
+            </a>
           </div>
 
           {/* Public Transport */}
@@ -88,7 +82,12 @@ export const TransportLightbox: React.FC<TransportLightboxProps> = ({
                         <span className="text-sm font-medium text-green-700">Directe:</span>
                         <div className="flex flex-wrap gap-1 mt-1">
                           {transportInfo.publicTransport.bus.direct.map((line) => (
-                            <span key={line} className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-medium">
+                            <span key={line} className={`px-2 py-1 rounded text-sm font-medium ${
+                              line.startsWith('B') || line.startsWith('M') ? 'bg-yellow-100 text-yellow-800' :
+                              line.startsWith('N') ? 'bg-blue-100 text-blue-800' :
+                              line.startsWith('C') ? 'bg-red-100 text-red-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
                               {line}
                             </span>
                           ))}
@@ -100,7 +99,12 @@ export const TransportLightbox: React.FC<TransportLightboxProps> = ({
                         <span className="text-sm font-medium text-blue-700">+5 min caminant:</span>
                         <div className="flex flex-wrap gap-1 mt-1">
                           {transportInfo.publicTransport.bus.walking5min.map((line) => (
-                            <span key={line} className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-medium">
+                            <span key={line} className={`px-2 py-1 rounded text-sm font-medium ${
+                              line.startsWith('B') || line.startsWith('M') ? 'bg-yellow-100 text-yellow-800' :
+                              line.startsWith('N') ? 'bg-blue-100 text-blue-800' :
+                              line.startsWith('C') ? 'bg-red-100 text-red-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
                               {line}
                             </span>
                           ))}
@@ -112,7 +116,12 @@ export const TransportLightbox: React.FC<TransportLightboxProps> = ({
                         <span className="text-sm font-medium text-yellow-700">+8 min caminant:</span>
                         <div className="flex flex-wrap gap-1 mt-1">
                           {transportInfo.publicTransport.bus.walking8min.map((line) => (
-                            <span key={line} className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm font-medium">
+                            <span key={line} className={`px-2 py-1 rounded text-sm font-medium ${
+                              line.startsWith('B') || line.startsWith('M') ? 'bg-yellow-100 text-yellow-800' :
+                              line.startsWith('N') ? 'bg-blue-100 text-blue-800' :
+                              line.startsWith('C') ? 'bg-red-100 text-red-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
                               {line}
                             </span>
                           ))}
@@ -124,7 +133,12 @@ export const TransportLightbox: React.FC<TransportLightboxProps> = ({
                         <span className="text-sm font-medium text-orange-700">+10 min caminant:</span>
                         <div className="flex flex-wrap gap-1 mt-1">
                           {transportInfo.publicTransport.bus.walking10min.map((line) => (
-                            <span key={line} className="bg-orange-100 text-orange-800 px-2 py-1 rounded text-sm font-medium">
+                            <span key={line} className={`px-2 py-1 rounded text-sm font-medium ${
+                              line.startsWith('B') || line.startsWith('M') ? 'bg-yellow-100 text-yellow-800' :
+                              line.startsWith('N') ? 'bg-blue-100 text-blue-800' :
+                              line.startsWith('C') ? 'bg-red-100 text-red-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
                               {line}
                             </span>
                           ))}
@@ -139,16 +153,22 @@ export const TransportLightbox: React.FC<TransportLightboxProps> = ({
               {transportInfo.publicTransport.metro && (
                 <div className="bg-white rounded-lg p-4 border">
                   <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
-                    <div className="w-4 h-4 mr-2 bg-red-600 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 mr-2 bg-purple-600 rounded-full flex items-center justify-center">
                       <span className="text-white text-xs font-bold">M</span>
                     </div>
                     Metro
                   </h4>
                   <div className="space-y-2">
                     {transportInfo.publicTransport.metro.map((metro, index) => (
-                      <div key={index} className="flex items-center justify-between bg-red-50 rounded-lg p-3">
+                      <div key={index} className={`flex items-center justify-between rounded-lg p-3 ${
+                        metro.line.includes('L2') ? 'bg-purple-50' : 
+                        metro.line.includes('L10N') ? 'bg-cyan-50' : 'bg-purple-50'
+                      }`}>
                         <div>
-                          <span className="font-medium text-red-800">{metro.line}</span>
+                          <span className={`font-medium ${
+                            metro.line.includes('L2') ? 'text-purple-800' : 
+                            metro.line.includes('L10N') ? 'text-cyan-800' : 'text-purple-800'
+                          }`}>{metro.line}</span>
                           <span className="text-gray-600 ml-2">({metro.station})</span>
                         </div>
                         <div className="flex items-center text-sm text-gray-600">
@@ -165,14 +185,16 @@ export const TransportLightbox: React.FC<TransportLightboxProps> = ({
               {transportInfo.publicTransport.train && (
                 <div className="bg-white rounded-lg p-4 border">
                   <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
-                    <Train className="w-4 h-4 mr-2 text-purple-600" />
+                    <div className="w-6 h-6 mr-2 bg-orange-600 rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">R</span>
+                    </div>
                     Rodalies
                   </h4>
                   <div className="space-y-2">
                     {transportInfo.publicTransport.train.map((train, index) => (
-                      <div key={index} className="bg-purple-50 rounded-lg p-3">
+                      <div key={index} className="bg-orange-50 rounded-lg p-3">
                         <div className="flex items-center justify-between">
-                          <span className="font-medium text-purple-800">Estació {train.station}</span>
+                          <span className="font-medium text-orange-800">Estació {train.station}</span>
                           {train.walkingTime && (
                             <div className="flex items-center text-sm text-gray-600">
                               <Clock className="w-3 h-3 mr-1" />
@@ -181,7 +203,7 @@ export const TransportLightbox: React.FC<TransportLightboxProps> = ({
                           )}
                         </div>
                         {train.notes && (
-                          <p className="text-sm text-purple-600 mt-1">{train.notes}</p>
+                          <p className="text-sm text-orange-600 mt-1">{train.notes}</p>
                         )}
                       </div>
                     ))}
@@ -193,16 +215,16 @@ export const TransportLightbox: React.FC<TransportLightboxProps> = ({
               {transportInfo.publicTransport.tram && (
                 <div className="bg-white rounded-lg p-4 border">
                   <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
-                    <div className="w-4 h-4 mr-2 bg-green-600 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 mr-2 bg-green-700 rounded-full flex items-center justify-center">
                       <span className="text-white text-xs font-bold">T</span>
                     </div>
                     Tram
                   </h4>
                   <div className="space-y-2">
                     {transportInfo.publicTransport.tram.map((tram, index) => (
-                      <div key={index} className="bg-green-50 rounded-lg p-3">
+                      <div key={index} className="bg-green-100 rounded-lg p-3">
                         <div className="flex items-center justify-between">
-                          <span className="font-medium text-green-800">Estació {tram.station}</span>
+                          <span className="font-medium text-green-900">Estació {tram.station}</span>
                           {tram.walkingTime && (
                             <div className="flex items-center text-sm text-gray-600">
                               <Clock className="w-3 h-3 mr-1" />
@@ -211,7 +233,7 @@ export const TransportLightbox: React.FC<TransportLightboxProps> = ({
                           )}
                         </div>
                         {tram.notes && (
-                          <p className="text-sm text-green-600 mt-1">{tram.notes}</p>
+                          <p className="text-sm text-green-700 mt-1">{tram.notes}</p>
                         )}
                       </div>
                     ))}

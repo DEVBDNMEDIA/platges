@@ -294,7 +294,6 @@ export const PlatjaCard: React.FC<PlatjaCardProps> = ({ platja, platjaInfo }) =>
                   }}
                   className="flex-1 flex items-center justify-center space-x-2 py-2 px-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
                 >
-                  <ExternalLink className="w-4 h-4" />
                   <span>Veure detalls</span>
                 </button>
               </div>
@@ -332,7 +331,6 @@ export const PlatjaCard: React.FC<PlatjaCardProps> = ({ platja, platjaInfo }) =>
                 }}
                 className="mt-4 flex items-center justify-center space-x-2 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium mx-auto"
               >
-                <ExternalLink className="w-4 h-4" />
                 <span>Veure detalls</span>
               </button>
 

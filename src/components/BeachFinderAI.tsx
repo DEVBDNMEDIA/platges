@@ -219,7 +219,7 @@ export const BeachFinderAI: React.FC<BeachFinderAIProps> = ({ isOpen, onClose })
 
   return (
     <div 
-      className="fixed inset-0 bg-white/95 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-white/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
       onClick={handleBackdropClick}
     >
       <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border-2 border-blue-100">

@@ -1,14 +1,13 @@
 import React from 'react';
-import { Waves, ChevronDown, Clock, Brain } from 'lucide-react';
+import { Waves, ChevronDown, Clock } from 'lucide-react';
 import { Platja } from '../types/platges';
 
 interface HeaderProps {
   lastUpdated: Date | null;
   platges: Platja[];
-  onOpenBeachFinder: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ platges, onOpenBeachFinder }) => {
+export const Header: React.FC<HeaderProps> = ({ platges }) => {
   const scrollToPlatges = () => {
     const platgesSection = document.getElementById('platges-section');
     if (platgesSection) {

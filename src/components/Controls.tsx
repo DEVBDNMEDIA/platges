@@ -1,5 +1,5 @@
 import React from 'react';
-import { RefreshCw, ArrowUpDown, Search } from 'lucide-react';
+import { RefreshCw, ArrowUpDown, Search, Brain } from 'lucide-react';
 
 interface ControlsProps {
   loading: boolean;
@@ -9,6 +9,7 @@ interface ControlsProps {
   onRefresh: () => void;
   onSortChange: (order: 'sud-nord' | 'nord-sud') => void;
   onSearchChange: (term: string) => void;
+  onOpenBeachFinder: () => void;
 }
 
 export const Controls: React.FC<ControlsProps> = ({ 
